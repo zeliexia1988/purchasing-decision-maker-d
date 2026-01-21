@@ -121,7 +121,7 @@ if contracts is not None:
         else:
             # Touret 逻辑
            if package.lower() == "touret":
-        result = contracts[
+               result = contracts[
             (contracts["Package"].str.strip().str.lower() == "touret") &
             (contracts["Material"] == material) &
             (contracts["Valid_Until"] >= today) &
@@ -198,4 +198,5 @@ if contracts is not None:
                 </a>
 
             ''', unsafe_allow_html=True)
+
 
