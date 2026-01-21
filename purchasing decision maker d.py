@@ -136,12 +136,12 @@ if contracts is not None:
                 if ref: result_text += f"\n\n{ref}"
 
     # 2️⃣ 经销商优先
-          elif rule_distributor_purchase(qty_input, package_choice, de_choice):
+            elif rule_distributor_purchase(qty_input, package_choice, de_choice):
                 result_text = "Decision: Consultation Négoce"
 
 
     # 3️⃣ 合同采购
-          elif rule_contract_purchase(qty_input, package_choice, de_choice):
+            elif rule_contract_purchase(qty_input, package_choice, de_choice):
                 valid = contracts[(contracts["Material"] == material_choice) & (contracts["DE"] == de_choice) & (contracts["PN"] == pn_choice)]
                 if not valid.empty:
                     top_sorted = valid_contracts.sort_values("Price").head(2)
@@ -186,6 +186,7 @@ if contracts is not None:
                 </a>
 
             ''', unsafe_allow_html=True)
+
 
 
 
