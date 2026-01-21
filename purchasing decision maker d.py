@@ -120,36 +120,51 @@ if contracts is not None:
                 
         else:
             # Touret 逻辑
-            if package_choice.lower() == "touret":
-                res = contracts[(contracts["Package"].str.strip().str.lower() == "touret") & (contracts["Material"] == material_choice) & (contracts["DE"] == de_choice)]
-                if not res.empty:
-                    row = res.iloc[0]
-                    result_text = f"Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\nDécision: Consultation Elydan (Délai 4-6 sem)"
-                    target_supplier = "Elydan"
-                else:
-                    result_text = "Decision: Contact Category Manager (Zélie XIA)"
-            
-            # 厂家逻辑
-            elif rule_factory_purchase(qty_input, package_choice, de_choice):
-                result_text = "Decision: Consultation Fabricant sous contrat (Elydan, Centraltubi)"
-                target_supplier = "Elydan"
-                ref = get_contract_price_text(material_choice, de_choice, pn_choice, today)
-                if ref: result_text += f"\n\n{ref}"
-            
-            # 经销商逻辑
-            elif rule_distributor_purchase(qty_input, package_choice, de_choice):
-                result_text = "Decision: Consultation Négoce"
-               
-            
-            # 合同逻辑
-            elif rule_contract_purchase(qty_input, package_choice, de_choice):
-                valid = contracts[(contracts["Material"] == material_choice) & (contracts["DE"] == de_choice) & (contracts["PN"] == pn_choice)]
-                if not valid.empty:
-                    top = valid.sort_values("Price").iloc[0]
-                    result_text = f"Decision: Application tarif contractuelle\nTop Supplier: {top['Supplier']} ({top['Price']:.2f} €/ml)"
-                    target_supplier = top['Supplier']
-                else:
-                    result_text = "Decision: Contact Category Manager (Zélie XIA)"
+           if package.lower() == "touret":
+        result = contracts[
+            (contracts["Package"].str.strip().str.lower() == "touret") &
+            (contracts["Material"] == material) &
+            (contracts["Valid_Until"] >= today) &
+            (contracts["DE"] == int(DE)) &
+            (contracts["PN"] == float(PN))
+        ]
+              if not result.empty:
+              row = result.iloc[0]
+              return f"✅ Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\n\nDécision: Consultation Elydan pour confirmer: Délai de fabrication 4-6 semaines sur produit hors stock"
+              else:
+              return "❌ Pas de prix pour touret trouvé, contacter Category Manager Achats (Zélie XIA)"
+
+          if rule_factory_purchase(quantity, package, DE):
+              text = "💡 Decision: Consultation Fabricant sous contrat (Elydan, Centraltubi)\n"
+              contract_ref = get_contract_price_text(material, DE, PN, today)
+              if contract_ref:
+              text += f"\n{contract_ref}\nElydan: Délai de fabrication de 4 à 6 semaines sur produit hors stock"
+              else:
+              text += "\n(Pas de prix contractuel pour référence, contacter Category Manager Achats (Zélie XIA))"
+              return text
+
+    # 2️⃣ 经销商优先
+          if rule_distributor_purchase(quantity, package, DE):
+          return "💡 Decision: Consultation Négoce"
+
+    # 3️⃣ 合同采购
+          if rule_contract_purchase(quantity, package, DE):
+            valid_contracts = contracts[
+            (contracts["Material"] == material) &
+            (contracts["Valid_Until"] >= today) &
+            (contracts["DE"] == int(DE)) &
+            (contracts["PN"] == float(PN))
+        ]
+          if not valid_contracts.empty:
+              top_sorted = valid_contracts.sort_values("Price").head(2)
+              text = "✅ Decision: Application tarif contractuelle\n\n"
+              for i, row in enumerate(top_sorted.itertuples(), 1):
+                  text += f"Supplier top{i}: {row.Supplier}, Price top{i}: {row.Price:.2f} €/ml\n"
+              return text + "\nElydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
+              else:
+              return "❌ Decision: Contact Category Manager Achats (Zélie XIA)"
+           return "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
+
 
         # --- 显示结果 ---
         st.divider()
@@ -183,3 +198,4 @@ if contracts is not None:
                 </a>
 
             ''', unsafe_allow_html=True)
+
