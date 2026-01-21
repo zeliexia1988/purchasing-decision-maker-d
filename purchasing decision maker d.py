@@ -128,7 +128,7 @@ if contracts is not None:
             (contracts["DE"] == int(DE)) &
             (contracts["PN"] == float(PN))
         ]
-              if not result.empty:
+              if not res.empty:
                   row = result.iloc[0]
                   return f"✅ Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\n\nDécision: Consultation Elydan pour confirmer: Délai de fabrication 4-6 semaines sur produit hors stock"
                   else:
@@ -198,6 +198,7 @@ if contracts is not None:
                 </a>
 
             ''', unsafe_allow_html=True)
+
 
 
 
