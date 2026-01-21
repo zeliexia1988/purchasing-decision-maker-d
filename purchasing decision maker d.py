@@ -9,7 +9,7 @@ st.set_page_config(page_title="SADE 采购决策支持系统", layout="centered"
 # ===============================
 # 1. 读取数据
 # ===============================
-@st.cache_data # 增加缓存，避免每次操作都重新读取Excel
+@st.cache_data
 def load_data():
     try:
         return pd.read_excel("contracts_b.xlsx")
@@ -20,7 +20,7 @@ def load_data():
 contracts = load_data()
 
 # ===============================
-# 2. 采购规则函数 (保持原逻辑不变)
+# 2. 采购规则函数
 # ===============================
 def rule_distributor_purchase(quantity, package, DE):
     return (package == "couronne" or DE < 125 or (DE < 200 and quantity < 1200))
@@ -87,15 +87,12 @@ st.title("🛡️ SADE Purchasing Decision")
 st.subheader("Decision Support for Pipes & Supplies")
 
 if contracts is not None:
-    # 侧边栏或主界面输入
     with st.form("purchase_form"):
         col1, col2 = st.columns(2)
-        
         with col1:
             material_choice = st.selectbox("Matériau:", sorted(contracts["Material"].dropna().unique().tolist()))
             package_choice = st.selectbox("Conditionnement:", ["couronne", "barre", "touret"])
             qty_input = st.number_input("Quantité (ml):", min_value=0, step=1)
-        
         with col2:
             de_choice = st.selectbox("DE (Diamètre Extérieur):", sorted(contracts["DE"].dropna().unique().tolist()))
             pn_choice = st.selectbox("PN (Pression Nominale):", sorted(contracts["PN"].dropna().unique().tolist()))
@@ -114,14 +111,16 @@ if contracts is not None:
                 target_supplier = "Electrosteel"
             elif rule_contract_purchase_dipipe(qty_input, de_choice):
                 result_text = "Decision: Application tarif contractuel Electrosteel"
-                
+                target_supplier = "Electrosteel"
             elif rule_distributor_purchase_dipipe(qty_input, de_choice):
                 result_text = "Decision: Consultation Négoce"
-                
+                target_supplier = "votre contact Commercial"
         else:
-            # Touret 逻辑
-           if package_choice.lower() == "touret":
-                res = contracts[(contracts["Package"].str.strip().str.lower() == "touret") & (contracts["Material"] == material_choice) & (contracts["DE"] == de_choice)]
+            # 1️⃣ Touret 逻辑
+            if package_choice.lower() == "touret":
+                res = contracts[(contracts["Package"].str.strip().str.lower() == "touret") & 
+                                (contracts["Material"] == material_choice) & 
+                                (contracts["DE"] == de_choice)]
                 if not res.empty:
                     row = res.iloc[0]
                     result_text = f"Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\nDécision: Consultation Elydan (Délai 4-6 sem)"
@@ -129,44 +128,49 @@ if contracts is not None:
                 else:
                     result_text = "Decision: Contact Category Manager (Zélie XIA)"
 
+            # 2️⃣ 厂家优先
             elif rule_factory_purchase(qty_input, package_choice, de_choice):
                 result_text = "Decision: Consultation Fabricant sous contrat (Elydan, Centraltubi)"
                 target_supplier = "Elydan"
                 ref = get_contract_price_text(material_choice, de_choice, pn_choice, today)
                 if ref: result_text += f"\n\n{ref}"
 
-    # 2️⃣ 经销商优先
+            # 3️⃣ 经销商优先
             elif rule_distributor_purchase(qty_input, package_choice, de_choice):
                 result_text = "Decision: Consultation Négoce"
+                target_supplier = "votre contact Commercial"
 
-
-    # 3️⃣ 合同采购
+            # 4️⃣ 合同采购
             elif rule_contract_purchase(qty_input, package_choice, de_choice):
-                valid = contracts[(contracts["Material"] == material_choice) & (contracts["DE"] == de_choice) & (contracts["PN"] == pn_choice)]
+                valid = contracts[(contracts["Material"] == material_choice) & 
+                                 (contracts["DE"] == de_choice) & 
+                                 (contracts["PN"] == pn_choice)]
                 if not valid.empty:
-                    top_sorted = valid_contracts.sort_values("Price").head(2)
-                    text = "✅ Decision: Application tarif contractuelle\n\n"
+                    top_sorted = valid.sort_values("Price").head(2)
+                    result_text = "✅ Decision: Application tarif contractuelle\n\n"
                     for i, row in enumerate(top_sorted.itertuples(), 1):
-                    text += f"Supplier top{i}: {row.Supplier}, Price top{i}: {row.Price:.2f} €/ml\n"
-                    return text + "\nElydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
+                        result_text += f"Supplier top{i}: {row.Supplier}, Price top{i}: {row.Price:.2f} €/ml\n"
+                    result_text += "\nElydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
+                    target_supplier = top_sorted.iloc[0]["Supplier"]
                 else:
-                    return "❌ Decision: Contact Category Manager Achats (Zélie XIA)"
-                return "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
-
+                    result_text = "❌ Decision: Contact Category Manager Achats (Zélie XIA)"
+            else:
+                result_text = "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
 
         # --- 显示结果 ---
         st.divider()
-        st.success(result_text)
+        if "❌" in result_text:
+            st.error(result_text)
+        else:
+            st.success(result_text)
 
         # --- 邮件生成 ---
-        if "Consultation" in result_text :
+        if "Consultation" in result_text:
             st.info("📧 **Brouillon d'Email de Consultation**")
             subject, body = generate_email_template(target_supplier, material_choice, qty_input, de_choice, pn_choice, package_choice)
             
-            # 邮件预览框
             st.text_area("Copier le contenu :", value=body, height=250)
             
-            # Outlook 按钮
             safe_subject = urllib.parse.quote(subject)
             safe_body = urllib.parse.quote(body)
             mailto_link = f"mailto:?subject={safe_subject}&body={safe_body}"
@@ -184,9 +188,7 @@ if contracts is not None:
                         📩 Ouvrir dans Outlook
                     </button>
                 </a>
-
             ''', unsafe_allow_html=True)
-
 
 
 
