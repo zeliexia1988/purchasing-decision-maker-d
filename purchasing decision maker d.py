@@ -60,7 +60,7 @@ def get_contract_price_text(material, DE, PN, today, top_n=2):
 
 def generate_email_template(supplier, material, quantity, de, pn, package):
     subject = f"Demande de prix - {material} - DE{de} PN{pn}"
-    body = f"""Bonjour {supplier if supplier else "Madame, Monsieur"},
+    body = f"""Bonjour,
 
 Dans le cadre d'un nouveau projet, nous souhaiterions obtenir votre meilleure offre de prix et délai pour le matériel suivant :
 
@@ -114,10 +114,10 @@ if contracts is not None:
                 target_supplier = "Electrosteel"
             elif rule_contract_purchase_dipipe(qty_input, de_choice):
                 result_text = "Decision: Application tarif contractuel Electrosteel"
-                target_supplier = "Electrosteel"
+                
             elif rule_distributor_purchase_dipipe(qty_input, de_choice):
                 result_text = "Decision: Consultation Négoce"
-                target_supplier = "votre contact Commercial"
+                
         else:
             # Touret 逻辑
             if package_choice.lower() == "touret":
@@ -139,7 +139,7 @@ if contracts is not None:
             # 经销商逻辑
             elif rule_distributor_purchase(qty_input, package_choice, de_choice):
                 result_text = "Decision: Consultation Négoce"
-                target_supplier = "votre contact Commercial"
+               
             
             # 合同逻辑
             elif rule_contract_purchase(qty_input, package_choice, de_choice):
@@ -156,7 +156,7 @@ if contracts is not None:
         st.success(result_text)
 
         # --- 邮件生成 ---
-        if "Consultation" in result_text or "Decision" in result_text:
+        if "Consultation" in result_text :
             st.info("📧 **Brouillon d'Email de Consultation**")
             subject, body = generate_email_template(target_supplier, material_choice, qty_input, de_choice, pn_choice, package_choice)
             
@@ -181,4 +181,5 @@ if contracts is not None:
                         📩 Ouvrir dans Outlook
                     </button>
                 </a>
+
             ''', unsafe_allow_html=True)
