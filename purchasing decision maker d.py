@@ -129,10 +129,10 @@ if contracts is not None:
             (contracts["PN"] == float(PN))
         ]
               if not result.empty:
-              row = result.iloc[0]
-              return f"✅ Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\n\nDécision: Consultation Elydan pour confirmer: Délai de fabrication 4-6 semaines sur produit hors stock"
-              else:
-              return "❌ Pas de prix pour touret trouvé, contacter Category Manager Achats (Zélie XIA)"
+                  row = result.iloc[0]
+                  return f"✅ Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\n\nDécision: Consultation Elydan pour confirmer: Délai de fabrication 4-6 semaines sur produit hors stock"
+                  else:
+                  return "❌ Pas de prix pour touret trouvé, contacter Category Manager Achats (Zélie XIA)"
 
           if rule_factory_purchase(quantity, package, DE):
               text = "💡 Decision: Consultation Fabricant sous contrat (Elydan, Centraltubi)\n"
@@ -198,5 +198,6 @@ if contracts is not None:
                 </a>
 
             ''', unsafe_allow_html=True)
+
 
 
