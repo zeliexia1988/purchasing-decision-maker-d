@@ -134,7 +134,7 @@ if contracts is not None:
                                 (contracts["DE"] == de_choice)]
                 if not res.empty:
                     row = res.iloc[0]
-                    result_text = f"Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\n✅Décision: Consultation Elydan (Délai 4-6 sem)"
+                    result_text = "✅Décision: Consultation Elydan (Délai 4-6 sem)\n" + "Prix contractuel (pour reference) :\n" + f"Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml"
                     target_supplier = "Elydan"
                 else:
                     result_text = "Decision: Contact Category Manager (Zélie XIA)"
@@ -194,6 +194,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
