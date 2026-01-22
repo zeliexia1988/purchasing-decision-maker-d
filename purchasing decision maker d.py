@@ -84,7 +84,7 @@ Cordialement,
 # 3. Streamlit 界面布局
 # ===============================
 st.title("🛡️ SADE Purchasing Decision")
-st.subheader("Decision Support for Pipes & Supplies")
+st.subheader("Aide à Décision Achats Tuyaux & Fournisseur")
 
 if contracts is not None:
     with st.form("purchase_form"):
@@ -101,7 +101,7 @@ if contracts is not None:
             qty_input = st.number_input("Quantité (ml):", min_value=0, step=1, value=0)
         
         with col2:
-            de_choice = st.selectbox("DE (Diamètre Extérieur):", options=de_options, index=0)
+            de_choice = st.selectbox("DE (Diamètre Extérieur)/DN (Diamètre Nominal):", options=de_options, index=0)
             pn_choice = st.selectbox("PN (Pression Nominale):", options=pn_options, index=0)
         
         submit_btn = st.form_submit_button("Run Decision", type="primary")
@@ -200,6 +200,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
