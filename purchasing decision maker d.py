@@ -89,20 +89,31 @@ st.subheader("Decision Support for Pipes & Supplies")
 if contracts is not None:
     with st.form("purchase_form"):
         col1, col2 = st.columns(2)
+        # 准备选项列表，在首位添加空值
+        mat_options = [""] + sorted(contracts["Material"].dropna().unique().tolist())
+        pkg_options = ["", "couronne", "barre", "touret"]
+        de_options = [""] + sorted(contracts["DE"].dropna().unique().tolist())
+        pn_options = [""] + sorted(contracts["PN"].dropna().unique().tolist())
         with col1:
-            material_choice = st.selectbox("Matériau:", sorted(contracts["Material"].dropna().unique().tolist()))
-            package_choice = st.selectbox("Conditionnement:", ["couronne", "barre", "touret"])
-            qty_input = st.number_input("Quantité (ml):", min_value=0, step=1)
+            # index=0 表示默认选择列表中的第一个（即空值 ""）
+            material_choice = st.selectbox("Matériau:", options=mat_options, index=0)
+            package_choice = st.selectbox("Conditionnement:", options=pkg_options, index=0)
+            qty_input = st.number_input("Quantité (ml):", min_value=0, step=1, value=0)
+        
         with col2:
-            de_choice = st.selectbox("DE (Diamètre Extérieur):", sorted(contracts["DE"].dropna().unique().tolist()))
-            pn_choice = st.selectbox("PN (Pression Nominale):", sorted(contracts["PN"].dropna().unique().tolist()))
+            de_choice = st.selectbox("DE (Diamètre Extérieur):", options=de_options, index=0)
+            pn_choice = st.selectbox("PN (Pression Nominale):", options=pn_options, index=0)
         
         submit_btn = st.form_submit_button("Run Decision", type="primary")
 
-    if submit_btn:
-        today = datetime.today()
-        result_text = ""
-        target_supplier = ""
+   if submit_btn:
+        # 增加一个校验：如果用户没有选择必填项，给出警告
+        if not material_choice or not package_choice or not de_choice or not pn_choice:
+            st.warning("⚠️ Veuillez remplir tous les champs (Matériau, Conditionnement, DE, PN).")
+        else:
+            today = datetime.today()
+            result_text = ""
+            target_supplier = ""
 
         # --- 决策逻辑 ---
         if "fonte" in material_choice.lower():
@@ -189,6 +200,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
