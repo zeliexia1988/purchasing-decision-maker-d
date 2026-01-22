@@ -160,7 +160,7 @@ if contracts is not None:
                     top_sorted = valid.sort_values("Price").head(2)
                     result_text = "✅ Decision: Application tarif contractuelle\n\n"
                     for i, row in enumerate(top_sorted.itertuples(), 1):
-                        result_text += f"Supplier top{i}: {row.Supplier}, Price top{i}: {row.Price:.2f} €/ml\n"
+                        result_text += f"Supplier top{i}: {row.Supplier};\n Price top{i}: {row.Price:.2f} €/ml\n"
                     result_text += "\nElydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
                     target_supplier = top_sorted.iloc[0]["Supplier"]
                 else:
@@ -200,6 +200,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
