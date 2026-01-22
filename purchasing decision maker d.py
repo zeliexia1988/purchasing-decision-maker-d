@@ -105,8 +105,8 @@ if contracts is not None:
             pn_choice = st.selectbox("PN (Pression Nominale):", options=pn_options, index=0)
         
         submit_btn = st.form_submit_button("Run Decision", type="primary")
-
-   if submit_btn:
+        
+    if submit_btn:
         # 增加一个校验：如果用户没有选择必填项，给出警告
         if not material_choice or not package_choice or not de_choice or not pn_choice:
             st.warning("⚠️ Veuillez remplir tous les champs (Matériau, Conditionnement, DE, PN).")
@@ -200,6 +200,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
