@@ -129,7 +129,7 @@ if contracts is not None:
         else:
             # 1️⃣ Touret 逻辑
             if package_choice.lower() == "touret":
-                result_text = "✅Décision: Consultation Elydan (Délai 4-6 sem); Prix contractuel (pour reference) :" 
+                result_text = "✅Décision: Consultation Elydan (Délai 4-6 sem);" + "\n Prix contractuel (pour reference) :" 
                 res = contracts[(contracts["Package"].str.strip().str.lower() == "touret") & 
                                 (contracts["Material"] == material_choice) & 
                                 (contracts["DE"] == de_choice)]
@@ -195,6 +195,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
