@@ -156,7 +156,7 @@ if contracts is not None:
                 result_text = "✅Decision: Application tarif contractuelle\n"                                
                 ref = get_contract_price_text(material_choice, de_choice, pn_choice, today)
                 if ref: 
-                    result_text += f"\n\n{ref}" + "Elydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
+                    result_text += f"\n\n{ref}\n" + "Elydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
                 else:
                     result_text = "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
             else:
@@ -194,6 +194,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
