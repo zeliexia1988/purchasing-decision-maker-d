@@ -134,28 +134,28 @@ if contracts is not None:
                                 (contracts["DE"] == de_choice)]
                 if not res.empty:
                     row = res.iloc[0]
-                    result_text = f"Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\nDécision: Consultation Elydan (Délai 4-6 sem)"
+                    result_text = f"Supplier: {row['Supplier']}, Price: {row['Price']:.2f} €/ml\n✅Décision: Consultation Elydan (Délai 4-6 sem)"
                     target_supplier = "Elydan"
                 else:
                     result_text = "Decision: Contact Category Manager (Zélie XIA)"
 
             # 2️⃣ 厂家优先
             elif rule_factory_purchase(qty_input, package_choice, de_choice):
-                result_text = "Decision: Consultation Fabricant sous contrat (Elydan, Centraltubi)"
+                result_text = "✅Decision: Consultation Fabricant sous contrat (Elydan, Centraltubi)"
                 target_supplier = "Elydan"
                 ref = get_contract_price_text(material_choice, de_choice, pn_choice, today)
                 if ref: result_text += f"\n\n{ref}"
 
             # 3️⃣ 经销商优先
             elif rule_distributor_purchase(qty_input, package_choice, de_choice):
-                result_text = "Decision: Consultation Négoce"
+                result_text = "✅Decision: Consultation Négoce"
                 target_supplier = "votre contact Commercial"
 
             # 4️⃣ 合同采购
             elif rule_contract_purchase(qty_input, package_choice, de_choice):
                  ref = get_contract_price_text(material_choice, de_choice, pn_choice, today)
-                if ref: result_text = "✅ Decision: Application tarif contractuelle\n\n{ref}\n"
-                    result_text += "Elydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
+                if ref: result_text = "✅Decision: Application tarif contractuelle\n\n{ref}\n"
+                        result_text += "Elydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
                 else:
                     result_text = "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
             else:
@@ -193,6 +193,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
