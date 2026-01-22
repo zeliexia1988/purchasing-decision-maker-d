@@ -153,10 +153,10 @@ if contracts is not None:
 
             # 4️⃣ 合同采购
             elif rule_contract_purchase(qty_input, package_choice, de_choice):
+                result_text = "✅Decision: Application tarif contractuelle\n"                                
                 ref = get_contract_price_text(material_choice, de_choice, pn_choice, today)
                 if ref: 
-                    result_text = "✅Decision: Application tarif contractuelle\n\n{ref}\n"
-                    result_text += "Elydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
+                    result_text += f"\n\n{ref}" + "Elydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
                 else:
                     result_text = "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
             else:
@@ -194,6 +194,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
