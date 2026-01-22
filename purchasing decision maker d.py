@@ -153,18 +153,12 @@ if contracts is not None:
 
             # 4️⃣ 合同采购
             elif rule_contract_purchase(qty_input, package_choice, de_choice):
-                valid = contracts[(contracts["Material"] == material_choice) & 
-                                 (contracts["DE"] == de_choice) & 
-                                 (contracts["PN"] == pn_choice)]
-                if not valid.empty:
-                    top_sorted = valid.sort_values("Price").head(2)
-                    result_text = "✅ Decision: Application tarif contractuelle\n\n"
-                    for i, row in enumerate(top_sorted.itertuples(), 1):
-                        result_text += f"Supplier top{i}: {row.Supplier}, Price top{i}: {row.Price:.2f} €/ml\n"
+                result_text = "✅ Decision: Application tarif contractuelle\n\n"
+                ref = get_contract_price_text(material_choice, de_choice, pn_choice, today)
+                if ref: result_text += f"\n\n{ref}"
                     result_text += "\nElydan : Supposé en stock, Expédition sous 72H, faire valider le délai par fournisseur"
-                    target_supplier = top_sorted.iloc[0]["Supplier"]
                 else:
-                    result_text = "❌ Decision: Contact Category Manager Achats (Zélie XIA)"
+                    result_text = "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
             else:
                 result_text = "ℹ️ Decision: Contact Category Manager Achats (Zélie XIA) pour analyse spécifique."
 
@@ -200,6 +194,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
