@@ -30,7 +30,7 @@ def rule_contract_purchase(quantity, package, DE):
             or (package == "barre" and 225 <= DE <= 315 and quantity < 2000))
 
 def rule_factory_purchase(quantity, package, DE):
-    return ((package == "barre" and 225 <= DE <= 315 and 2000 <= quantity) or package.lower() == "touret")
+    return ((package == "barre" and 225 <= DE <= 315 and 2000 <= quantity) or package.lower() == "touret" or (package == "barre" and 315 < DE))
 
 def rule_distributor_purchase_dipipe(quantity, DE):
     return (DE < 80)
@@ -200,6 +200,7 @@ if contracts is not None:
                     </button>
                 </a>
             ''', unsafe_allow_html=True)
+
 
 
 
